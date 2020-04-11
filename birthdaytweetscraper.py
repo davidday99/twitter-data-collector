@@ -16,4 +16,4 @@ tweet_text = [tweet.text for tweet in tweets]
 
 tweet_data = pd.DataFrame({'username': tweet_user, 'tweet': tweet_text})
 
-tweet_data.to_csv('18yo.csv', index=False, encoding='utf-8')  # table of users and their birthday tweets
+tweet_data.to_csv('{}yo.csv'.format(age), index=False, encoding='utf-8')  # table of users and their birthday tweets

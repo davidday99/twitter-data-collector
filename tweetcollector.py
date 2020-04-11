@@ -2,9 +2,8 @@ import pandas as pd
 import re
 import GetOldTweets3 as got
 
-df = pd.read_csv('18yo.csv')
 age = 18  # age used as a label for each data sample that is created, *THIS SHOULD MATCH age IN birthdaytweetscraper.py*
-
+df = pd.read_csv('{}yo.csv'.format(age))
 users = []
 
 tweets = df['tweet']
@@ -39,4 +38,4 @@ tweet_ds.rename(columns={'index': 'user'}, inplace=True)  # after transposing, n
 
 tweet_ds.insert(0, 'age', [age] * tweet_ds.shape[0], True)  # add age label
 
-tweet_ds.to_csv('dataset.csv', index=False, encoding='utf-8')
+tweet_ds.to_csv('{}yodataset.csv'.format(age), index=False, encoding='utf-8')
