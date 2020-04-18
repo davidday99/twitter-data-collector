@@ -27,21 +27,20 @@ def get_inputs():
     parser = argparse.ArgumentParser(description='Request tweets from GetOldTweets3 API')
     parser.add_argument('-a', '--age', dest='age', action='append', help='Age to get tweets for')
     parser.add_argument('-e', '--end', dest='end_age', help='End age to get tweets for')
-    parser.add_argument('-c', '--count', dest='count', help='Number of tweets to get')
+    parser.add_argument('-n', '--number', dest='number', help='Number of tweets to get')
     args = parser.parse_args()
 
-    return args.age, args.end_age, args.count
+    return args.age, args.end_age, args.number
 
 
 
-def find_ages(ages, end_age, count):
+def find_ages(ages, end_age):
     """
     Purpose:
         Produce list of ages to get from input params
     Args:
         ages    (list): List of age integers
         end_age  (int): Last age to find data for
-        count    (int): Number of tweets to get
     Returns:
         age_list    (list): List of ages to find tweets for 
     """
@@ -132,10 +131,10 @@ def main():
     # number of tweets to scrape from each user
     count = 10
 
-    age, end_age, count = get_inputs()
-    age_list = find_ages(age, end_age, count)
+    age, end_age, number = get_inputs()
+    age_list = find_ages(age, end_age)
     for age in age_list:
-        get_tweets(age, count)
+        get_tweets(age, number)
     return None
 
 
