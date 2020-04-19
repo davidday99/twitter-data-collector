@@ -51,7 +51,7 @@ def find_ages(ages, end_age):
     if len(ages) is 1 or end_age is -1:
         return int_age
 
-    last_age = int_age[-1]
+    last_age = max(int_age)
     age_diff = int(end_age) - last_age
     if age_diff < 0:
         sys.exit("Last input age exceeds input age range")
