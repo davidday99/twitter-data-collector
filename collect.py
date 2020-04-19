@@ -123,7 +123,18 @@ def get_tweetset(age, count, data_path):
 
         tweetCriteria = got.manager.TweetCriteria().setUsername(user).setMaxTweets(count)
         tweets = got.manager.TweetManager.getTweets(tweetCriteria)
+        
+        tweet_id = [tweet.id for tweet in tweets]
+        tweet_permalink = [tweet.permalink for tweet in tweets]
+        tweet_username = [tweet.username for tweet in tweets]
+        tweet_to = [tweet.to for tweet in tweets]
         tweet_text = [tweet.text for tweet in tweets]
+        tweet_date = [tweet.date for tweet in tweets]
+        tweet_retweets = [tweet.retweets for tweet in tweets]
+        tweet_favorites = [tweet.favorites for tweet in tweets]
+        tweet_mentions = [tweet.mentions for tweet in tweets]
+        tweet_hashtags = [tweet.hashtags for tweet in tweets]
+        tweet_geo = [tweet.id for tweet in tweets] 
 
         # print(user + "has " + str(len(tweet_text)) + " tweets, adding "
         #      + str(count - len(tweet_text)) + " extra empty tweets.")
@@ -136,14 +147,20 @@ def get_tweetset(age, count, data_path):
             print('{}: Getting tweets from {}...'.format(userNum, user))
             userNum += 1
 
-        tweet_data[user] = tweet_text
+        for i in range(len(tweet_id)):
+            tweet_data[user + str(i)] = [tweet_id[i], tweet_permalink[i], tweet_username[i], tweet_to[i],
+                                         tweet_text[i], tweet_date[i], tweet_retweets[i], tweet_favorites[i],
+                                         tweet_mentions[i], tweet_hashtags[i], tweet_geo[i]]
 
     print('Done!')
     print('{} samples created out of {} total users.'.format(len(tweet_data), len(users)))
 
     tweet_ds = pd.DataFrame(tweet_data).transpose().reset_index()  # original dataframe has users as a row, so transpose
-    tweet_ds.rename(columns={'index': 'user'}, inplace=True)  # after transposing, need to add a name to user column
     tweet_ds.insert(0, 'age', [age] * tweet_ds.shape[0], True)  # add age label
+    
+    tweet_ds = tweet_ds.drop('index', axis=1)
+    tweet_ds.columns = ['age', 'id', 'permalink', 'username', 'to', 'text', 'date', 'retweets', 'favorites', 'mentions', 'hashtags', 'geo']
+
     tweet_ds.to_csv('{}yo_dataset.csv'.format(age), index=False, encoding='utf-8')
 
     return None
