@@ -139,7 +139,7 @@ def main():
     age_list = find_ages(age, end_age)
     print(age_list)
     for age in age_list:
-        get_tweets(age, number)
+        get_tweets(age, int(number))
     return None
 
 
