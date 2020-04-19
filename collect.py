@@ -25,7 +25,7 @@ def get_inputs():
     """
     # NOTE -e will add on ages starting from last age in `-a` list
     parser = argparse.ArgumentParser(description='Request tweets from GetOldTweets3 API')
-    parser.add_argument('-a', '--age', dest='age', action='append', default=['18'], help='Age to get tweets for')
+    parser.add_argument('-a', '--age', dest='age', action='append', help='Age to get tweets for')
     parser.add_argument('-e', '--end', dest='end_age', default=-1, help='End age to get tweets for')
     parser.add_argument('-n', '--number', dest='number', default=10, help='Number of tweets to get')
     args = parser.parse_args()
@@ -45,6 +45,8 @@ def find_ages(ages, end_age):
         age_list    (list): List of integer ages to find tweets for 
     """
     int_age = []
+    if len(ages) is 0:
+        int_age = [18]
     for age in ages:
         int_age.append(int(age))
 
@@ -135,7 +137,7 @@ def get_tweets(age, count):
 def main():
     age, end_age, number = get_inputs()
     age_list = find_ages(age, end_age)
-
+    print(age_list)
     for age in age_list:
         get_tweets(age, number)
     return None
