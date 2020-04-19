@@ -2,8 +2,9 @@
 
 # First party packages
 import argparse
-import re
+import os
 import sys
+import re
 import time
 
 # Third party packages
@@ -64,8 +65,7 @@ def find_ages(ages, end_age):
     return int_age
 
 
-
-def get_tweets(age, count):
+def get_tweetset(age, count):
     """
     Purpose:
         Gets tweets for one age
@@ -134,12 +134,45 @@ def get_tweets(age, count):
     return None
 
 
+
+def get_age_tweets():
+    """
+    Purpose:
+        Gets 2000 tweets from one age group
+    Args:
+        age (int): Integer age
+    Returns:
+        None
+    """
+    count = 2000  # set number of results to fetch
+
+    tweetCriteria = got.manager.TweetCriteria().setQuerySearch(text_query.format(age)).setMaxTweets(count)
+
+    tweets = got.manager.TweetManager.getTweets(tweetCriteria)
+
+    print('{} tweets found.'.format(len(tweets)))
+
+    tweet_user = [tweet.username for tweet in tweets]
+    tweet_text = [tweet.text for tweet in tweets]
+
+    tweet_data = pd.DataFrame({'username': tweet_user, 'tweet': tweet_text})
+
+    tweet_data.to_csv('{}yo.csv'.format(age), index=False, encoding='utf-8') 
+
+    return None
+
+
 def main():
     age, end_age, number = get_inputs()
     age_list = find_ages(age, end_age)
     print(age_list)
+    # Make data directory if it does not exist
+    path_data = os.path.dirname(os.path.abspath(__file__)) + '/data'
+    os.makedirs(path_data, exist_ok=True)
+    print(path_data)
+
     for age in age_list:
-        get_tweets(age, int(number))
+        get_tweetset(age, int(number))
     return None
 
 
