@@ -7,7 +7,6 @@ e.g.: $ ./collect.py -a 18 -n 20
       $ ./collect.py -a 18 -a 20 -e 24 -n 20
 Note that the script automatically fills between the largest `-a` value
 and the `-e` value (if passed)
-
 Collects tweets and organizes them into datasets by age.
 """
 # First party packages
@@ -36,42 +35,34 @@ def get_inputs():
     """
     # NOTE -e will add on ages starting from last age in `-a` list
     parser = argparse.ArgumentParser(description='Request tweets from GetOldTweets3 API')
-    parser.add_argument('-a', '--age', dest='age', action='append', help='Age to get tweets for')
-    parser.add_argument('-e', '--end', dest='end_age', default=-1, help='End age to get tweets for')
-    parser.add_argument('-n', '--number', dest='number', default=10, help='Number of tweets to get')
+    parser.add_argument('-a', '--age', dest='age', default=18, help='Age to get tweets for')
+    parser.add_argument('-e', '--end', dest='end_age', default=24, help='End age to get tweets for')
+    parser.add_argument('-n', '--number', dest='number', default=1, help='Number of tweets to get')
     args = parser.parse_args()
 
     return args.age, args.end_age, args.number
 
 
 
-def find_ages(ages, end_age):
+def find_ages(age, end_age):
     """
     Purpose:
         Produce list of ages to get from input params
     Args:
-        ages    (list): List of age strings
+        age    (list): Start age string
         end_age  (str): Last age string to find data for
     Returns:
         age_list    (list): List of integer ages to find tweets for 
     """
     int_age = []
-    if len(ages) is 0:
-        int_age = [18]
-    for age in ages:
-        int_age.append(int(age))
 
-    if len(ages) is 1 or end_age is -1:
-        return int_age
-
-    last_age = max(int_age)
-    age_diff = int(end_age) - last_age
+    age_diff = int(end_age) - int(age)
     if age_diff < 0:
         sys.exit("Last input age exceeds input age range")
 
-    for i in range(1, age_diff+1):
-        int_age.append(last_age+i)
-
+    for i in range(int(age), int(end_age)+1):
+        int_age.append(i)
+    
     return int_age
 
 
@@ -205,7 +196,7 @@ def main():
 
     # Change working directory to data directory
     os.chdir(data_path)
-
+    
     for age in age_list:
         get_tweetset(age, int(number), data_path)
     return None
