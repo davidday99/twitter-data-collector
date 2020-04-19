@@ -65,19 +65,24 @@ def find_ages(ages, end_age):
     return int_age
 
 
-def get_tweetset(age, count):
+def get_tweetset(age, count, data_path):
     """
     Purpose:
         Gets tweets for one age
     Args:
-        age     (int): age used as a label for each data sample that is created,
-                       *THIS SHOULD MATCH age IN birthdaytweetscraper.py*
-        count   (int): number of tweets to scrape from each user
+        age         (int): age used as a label for each data sample that is created,
+                          *THIS SHOULD MATCH age IN birthdaytweetscraper.py*
+        count       (int): number of tweets to scrape from each user
     Returns:
         None
     """
     FIFTEEN_MIN_IN_SEC = 15 * 65  # add a little extra time to be safe
-    df = pd.read_csv('{}yo.csv'.format(age))
+    in_csv_name = '{}yo.csv'.format(age)
+    if os.path.exists(data_path + in_csv_name) is False:
+        print(in_csv_name + " not found! Downloading dataset...")
+        get_age_tweets(age)
+    
+    df = pd.read_csv(in_csv_name)
     users = []
 
     tweets = df['tweet']
@@ -135,7 +140,7 @@ def get_tweetset(age, count):
 
 
 
-def get_age_tweets():
+def get_age_tweets(age):
     """
     Purpose:
         Gets 2000 tweets from one age group
@@ -144,6 +149,7 @@ def get_age_tweets():
     Returns:
         None
     """
+    text_query = 'happy {}th birthday'
     count = 2000  # set number of results to fetch
 
     tweetCriteria = got.manager.TweetCriteria().setQuerySearch(text_query.format(age)).setMaxTweets(count)
@@ -165,14 +171,16 @@ def get_age_tweets():
 def main():
     age, end_age, number = get_inputs()
     age_list = find_ages(age, end_age)
-    print(age_list)
+
     # Make data directory if it does not exist
-    path_data = os.path.dirname(os.path.abspath(__file__)) + '/data'
-    os.makedirs(path_data, exist_ok=True)
-    print(path_data)
+    data_path = os.path.dirname(os.path.abspath(__file__)) + '/data'
+    os.makedirs(data_path, exist_ok=True)
+
+    # Change working directory to data directory
+    os.chdir(data_path)
 
     for age in age_list:
-        get_tweetset(age, int(number))
+        get_tweetset(age, int(number), data_path)
     return None
 
 
