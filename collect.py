@@ -25,9 +25,9 @@ def get_inputs():
     """
     # NOTE -e will add on ages starting from last age in `-a` list
     parser = argparse.ArgumentParser(description='Request tweets from GetOldTweets3 API')
-    parser.add_argument('-a', '--age', dest='age', action='append', help='Age to get tweets for')
-    parser.add_argument('-e', '--end', dest='end_age', help='End age to get tweets for')
-    parser.add_argument('-n', '--number', dest='number', help='Number of tweets to get')
+    parser.add_argument('-a', '--age', dest='age', action='append', default=['18'], help='Age to get tweets for')
+    parser.add_argument('-e', '--end', dest='end_age', default=-1, help='End age to get tweets for')
+    parser.add_argument('-n', '--number', dest='number', default=10, help='Number of tweets to get')
     args = parser.parse_args()
 
     return args.age, args.end_age, args.number
@@ -39,20 +39,27 @@ def find_ages(ages, end_age):
     Purpose:
         Produce list of ages to get from input params
     Args:
-        ages    (list): List of age integers
-        end_age  (int): Last age to find data for
+        ages    (list): List of age strings
+        end_age  (str): Last age string to find data for
     Returns:
-        age_list    (list): List of ages to find tweets for 
+        age_list    (list): List of integer ages to find tweets for 
     """
-    last_age = ages[-1]
-    age_diff = end_age - last_age
-    if (age_diff < 0):
+    int_age = []
+    for age in ages:
+        int_age.append(int(age))
+
+    if len(ages) is 1 or end_age is -1:
+        return int_age
+
+    last_age = int_age[-1]
+    age_diff = int(end_age) - last_age
+    if age_diff < 0:
         sys.exit("Last input age exceeds input age range")
 
     for i in range(1, age_diff+1):
-        ages.append(last_age+1)
+        int_age.append(last_age+i)
 
-    return ages
+    return int_age
 
 
 
@@ -61,8 +68,9 @@ def get_tweets(age, count):
     Purpose:
         Gets tweets for one age
     Args:
-        age     (int): Age of tweets to get
-        count   (int): Number of tweets to get
+        age     (int): age used as a label for each data sample that is created,
+                       *THIS SHOULD MATCH age IN birthdaytweetscraper.py*
+        count   (int): number of tweets to scrape from each user
     Returns:
         None
     """
@@ -84,7 +92,7 @@ def get_tweets(age, count):
 
     tweet_data = {}
 
-    print('Getting {} tweets from each of {} users.'.format(count, len(users), age))
+    print('Getting {} tweets from each of {} {}-year old users.'.format(count, len(users), age))
 
     userNum = 1
     for user in users:
@@ -125,14 +133,9 @@ def get_tweets(age, count):
 
 
 def main():
-    # age used as a label for each data sample that is created, *THIS SHOULD MATCH age IN birthdaytweetscraper.py*
-    age = [18]
-    end_age = -1
-    # number of tweets to scrape from each user
-    count = 10
-
     age, end_age, number = get_inputs()
     age_list = find_ages(age, end_age)
+
     for age in age_list:
         get_tweets(age, number)
     return None
