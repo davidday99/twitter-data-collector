@@ -1,5 +1,15 @@
 #!/usr/bin/env python3
+"""
+collect.py
+$ ./collect.py -a {age} -e {end_age_range} -n {number}
+e.g.: $ ./collect.py -a 18 -n 20
+      $ ./collect.py -a 18 -e 24 -n 20
+      $ ./collect.py -a 18 -a 20 -e 24 -n 20
+Note that the script automatically fills between the largest `-a` value
+and the `-e` value (if passed)
 
+Collects tweets and organizes them into datasets by age.
+"""
 # First party packages
 import argparse
 import os
