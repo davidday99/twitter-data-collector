@@ -29,7 +29,7 @@ def get_inputs():
     Args:
         None
     Returns:
-        args.age     (list): List of ages to get
+        args.age     (str): Start age
         args.end_age (str): End age if requiring age range
         args.count   (str): Number of tweets to get
     """
