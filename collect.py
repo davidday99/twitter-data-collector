@@ -167,7 +167,17 @@ def get_age_tweets(age):
     Returns:
         None
     """
-    text_query = 'happy {}th birthday'
+    suffix = "th":
+    if age % 10 == 1:
+    	suffix = 'st'
+    elif age % 10 == 2:
+    	suffix = 'nd'
+    elif age % 10 == 3:
+    	suffix = 'rd'
+
+    text_query = 'happy {}' + suffix +' birthday'
+
+    
     count = 2000  # set number of results to fetch
 
     tweetCriteria = got.manager.TweetCriteria().setQuerySearch(text_query.format(age)).setMaxTweets(count)
