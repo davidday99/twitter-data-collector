@@ -100,7 +100,7 @@ def get_tweetset(age, count, data_path):
     for tweet in tweets:
         try:
         	# Add tweet only if it's "@user happy nth birthday" or "happy nth birthday @user"
-        	query = 'happy ' + str(age) + suffix + ' birthday @'
+        	query = 'happy ' + str(age) + suffix + ' birthday'
         	if query in tweet.lower():
         		users.append(re.sub('[\W]', '', tweet.split('birthday @', 1)[1].split(' ')[0]))  # extract username, clean up, and add to list
         		#print(tweet)
@@ -108,7 +108,7 @@ def get_tweetset(age, count, data_path):
         		split = tweet.split(' ')
         		prev_word = ''
         		for word in split:
-        			if '@' in prev_word and word == 'happy':
+        			if '@' in prev_word and word == 'happy' and tweet.contains(query):
         				users.append(prev_word[1:])
         				#print(tweet)
         				break
