@@ -103,12 +103,14 @@ def get_tweetset(age, count, data_path):
         	query = 'happy ' + str(age) + suffix + ' birthday @'
         	if query in tweet.lower():
         		users.append(re.sub('[\W]', '', tweet.split('birthday @', 1)[1].split(' ')[0]))  # extract username, clean up, and add to list
+        		#print(tweet)
         	else:
-        		split = query.split(' ')
+        		split = tweet.split(' ')
         		prev_word = ''
         		for word in split:
         			if '@' in prev_word and word == 'happy':
         				users.append(prev_word[1:])
+        				#print(tweet)
         				break
         			prev_word = word
         except IndexError:
