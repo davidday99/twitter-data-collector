@@ -108,7 +108,7 @@ def get_tweetset(age, count, data_path):
         		split = tweet.split(' ')
         		prev_word = ''
         		for word in split:
-        			if '@' in prev_word and word == 'happy' and tweet.contains(query):
+        			if '@' in prev_word and word == 'happy' and query in tweet:
         				users.append(prev_word[1:])
         				#print(tweet)
         				break
