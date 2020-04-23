@@ -89,10 +89,28 @@ def get_tweetset(age, count, data_path):
     tweets = df['tweet']
 
     # get the username of the person who's being wished happy birthday, add to users list
+    suffix = "th"
+    if age % 10 == 1:
+    	suffix = 'st'
+    elif age % 10 == 2:
+    	suffix = 'nd'
+    elif age % 10 == 3:
+    	suffix = 'rd'
+
     for tweet in tweets:
         try:
-            users.append(re.sub('[\W]', '',
-                                tweet.split('@', 1)[1].split(' ')[0]))  # extract username, clean up, and add to list
+        	# Add tweet only if it's "@user happy nth birthday" or "happy nth birthday @user"
+        	query = 'happy ' + str(age) + suffix + ' birthday @'
+        	if query in tweet.lower():
+        		users.append(re.sub('[\W]', '', tweet.split('birthday @', 1)[1].split(' ')[0]))  # extract username, clean up, and add to list
+        	else:
+        		split = query.split(' ')
+        		prev_word = ''
+        		for word in split:
+        			if '@' in prev_word and word == 'happy':
+        				users.append(prev_word[1:])
+        				break
+        			prev_word = word
         except IndexError:
             continue
 
@@ -176,11 +194,11 @@ def get_age_tweets(age):
     	suffix = 'rd'
 
     text_query = 'happy {}' + suffix +' birthday'
+    print("Query: " + text_query.format(age))
 
+    count = 5000  # set number of results to fetch
 
-    count = 2000  # set number of results to fetch
-
-    tweetCriteria = got.manager.TweetCriteria().setQuerySearch(text_query.format(age)).setMaxTweets(count)
+    tweetCriteria = got.manager.TweetCriteria().setQuerySearch(text_query.format(age)).setMaxTweets(count).setSince('2019-04-22')
 
     tweets = got.manager.TweetManager.getTweets(tweetCriteria)
 
@@ -188,9 +206,7 @@ def get_age_tweets(age):
 
     tweet_user = [tweet.username for tweet in tweets]
     tweet_text = [tweet.text for tweet in tweets]
-
     tweet_data = pd.DataFrame({'username': tweet_user, 'tweet': tweet_text})
-
     tweet_data.to_csv('{}yo.csv'.format(age), index=False, encoding='utf-8') 
 
     return None
