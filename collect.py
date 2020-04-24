@@ -79,7 +79,7 @@ def get_tweetset(age, count, data_path):
     """
     FIFTEEN_MIN_IN_SEC = 15 * 65  # add a little extra time to be safe
     in_csv_name = '{}yo.csv'.format(age)
-    if os.path.exists(data_path + in_csv_name) is False:
+    if os.path.exists(os.path.join(data_path,in_csv_name)) is False:
         print(in_csv_name + " not found! Downloading dataset...")
         get_age_tweets(age)
     
@@ -124,8 +124,8 @@ def get_tweetset(age, count, data_path):
 
     userNum = 1
     for user in users:
-        # every 500 users, wait 15 minutes to avoid making too many HTTP requests and erroring out
-        if (userNum % 500) == 0:
+        # every 100 users, wait 15 minutes to avoid making too many HTTP requests and erroring out
+        if (userNum % 60) == 0:
             print("*15 minute request cool-off*")
             startTime = time.time()
             currentTime = time.time()
