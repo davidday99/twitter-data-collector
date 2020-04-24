@@ -35,33 +35,42 @@ def get_inputs():
     """
     # NOTE -e will add on ages starting from last age in `-a` list
     parser = argparse.ArgumentParser(description='Request tweets from GetOldTweets3 API')
-    parser.add_argument('-a', '--age', dest='age', default=18, help='Age to get tweets for')
-    parser.add_argument('-e', '--end', dest='end_age', default=24, help='End age to get tweets for')
-    parser.add_argument('-n', '--number', dest='number', default=1, help='Number of tweets to get')
+    parser.add_argument('-a', '--age', dest='age', action='append', help='Age to get tweets for')
+    parser.add_argument('-e', '--end', dest='end_age', default=-1, help='End age to get tweets for')
+    parser.add_argument('-n', '--number', dest='number', default=10, help='Number of tweets to get')
     args = parser.parse_args()
 
     return args.age, args.end_age, args.number
 
 
 
-def find_ages(age, end_age):
+def find_ages(ages, end_age):
     """
     Purpose:
         Produce list of ages to get from input params
     Args:
-        age    (list): Start age string
+        age     (list): Start age string
         end_age  (str): Last age string to find data for
     Returns:
         age_list    (list): List of integer ages to find tweets for 
     """
     int_age = []
+    if len(ages) is 0:
+        int_age = [18]
+    for age in ages:
+        int_age.append(int(age))
 
-    age_diff = int(end_age) - int(age)
+    if len(ages) is 1 or end_age is -1:
+        return int_age
+
+    last_age = max(int_age)
+    age_diff = int(end_age) - last_age
+
     if age_diff < 0:
         sys.exit("Last input age exceeds input age range")
 
-    for i in range(int(age), int(end_age)+1):
-        int_age.append(i)
+    for i in range(1, age_diff+1):
+        int_age.append(last_age+i)
     
     return int_age
 
