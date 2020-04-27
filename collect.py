@@ -115,6 +115,8 @@ def get_tweetset(age, count, data_path):
         			prev_word = word
         except IndexError:
             continue
+        except AttributeError:
+            continue
 
     users = list(set(users))  # remove repeated users
 
