@@ -3,7 +3,6 @@ import requests
 import pandas as pd
 import numpy as np
 
-
 print("\n************************Combining all datasets************************\n")
 
 data_all = pd.read_csv('data/18yo_dataset.csv')
@@ -30,6 +29,8 @@ data_all.to_csv('data/data_all_raw.csv')
 
 print("\n************************Populating metadata************************\n")
 
+failed_handles = []
+
 for idx, row in data_all.iterrows():
     if data_all.loc[data_all.index[idx], 'Followers'] == 0:
         handle = row['username']
@@ -51,8 +52,14 @@ for idx, row in data_all.iterrows():
             print('ratio = ' + str(int(followers.get('data-count'))/int(following.get('data-count'))))
         except Exception as e:
             print(e)
-            print('Unable to scrape data for ' + handle)
+            print('Unable to scrape data for handle')
+            failed_handles.append(handle)
+            continue
 
 print("************************Success, saving csv************************")
 
 data_all.to_csv('data/data_all_raw.csv')
+
+print("Failed to scrape data for: ")
+for handle in failed_handles:
+    print(str(handle))
