@@ -1,11 +1,14 @@
 from bs4 import BeautifulSoup
 import requests
 import pandas as pd
+import numpy as np
 
-data_all = pd.read_csv('data/25yo_dataset.csv')
-# data_all = pd.read_csv('data/18yo_dataset.csv')
 
-for age in range(19, 94):
+print("\n************************Combining all datasets************************\n")
+
+data_all = pd.read_csv('data/18yo_dataset.csv')
+
+for age in range(19, 91):
     try:
         csv_name = 'data/' + str(age) + 'yo_dataset.csv'
         temp = pd.read_csv(csv_name)
@@ -15,40 +18,41 @@ for age in range(19, 94):
         print(e)
         continue
 
+data_all = data_all.assign(Followers=np.zeros(data_all.shape[0]))
+data_all = data_all.assign(Following=np.zeros(data_all.shape[0]))
+data_all = data_all.assign(Follower_Following_Ratio=np.zeros(data_all.shape[0]))
+data_all = data_all.reset_index()
+
+print("New DataAll Shape")
 print(data_all.shape)
 print(data_all.head())
+data_all.to_csv('data/data_all_raw.csv')
 
-list_followers = []
-list_following = []
-list_ratio = []
+print("\n************************Populating metadata************************\n")
 
 for idx, row in data_all.iterrows():
-    handle = row['username']
-    print('scraping for ' + str(handle))
-    temp = requests.get('https://twitter.com/' + str(handle))
-    bs = BeautifulSoup(temp.text,'lxml')
-    try:
-        follow_box = bs.find('li',{'class':'ProfileNav-item ProfileNav-item--followers'})
-        followers = follow_box.find('a').find('span',{'class':'ProfileNav-value'})
-        print("Number of followers: {} ".format(followers.get('data-count')))
-        list_followers.append(int(followers.get('data-count')))
-        following_box = bs.find('li',{'class':'ProfileNav-item ProfileNav-item--following'})
-        following = following_box.find('a').find('span',{'class':'ProfileNav-value'})
-        print("Number following: {} ".format(following.get('data-count')))
-        list_following.append(int(following.get('data-count')))
-        list_ratio.append((float(int(followers.get('data-count'))/int(following.get('data-count')))))
-        print('ratio = ' + str(int(followers.get('data-count'))/int(following.get('data-count'))))
-    except Exception as e:
-        print(e)
-        print('Account name not found...')
-    print()
+    if data_all.loc[data_all.index[idx], 'Followers'] == 0:
+        handle = row['username']
+        print('scraping for ' + str(handle))
+        temp = requests.get('https://twitter.com/' + str(handle))
+        bs = BeautifulSoup(temp.text,'lxml')
+        print()
+        try:
+            print("Scraping data for " + handle)
+            follow_box = bs.find('li',{'class':'ProfileNav-item ProfileNav-item--followers'})
+            followers = follow_box.find('a').find('span',{'class':'ProfileNav-value'})
+            print("Number of followers: {} ".format(followers.get('data-count')))
+            data_all.loc[data_all['username'] == handle, 'Followers'] = int(followers.get('data-count'))
+            following_box = bs.find('li',{'class':'ProfileNav-item ProfileNav-item--following'})
+            following = following_box.find('a').find('span',{'class':'ProfileNav-value'})
+            print("Number following: {} ".format(following.get('data-count')))
+            data_all.loc[data_all['username'] == handle, 'Following'] = int(following.get('data-count'))
+            data_all.loc[data_all['username'] == handle, 'Follower_Following_Ratio'] = int(followers.get('data-count'))/int(following.get('data-count'))
+            print('ratio = ' + str(int(followers.get('data-count'))/int(following.get('data-count'))))
+        except Exception as e:
+            print(e)
+            print('Unable to scrape data for ' + handle)
 
-data_all = data_all.assign(Followers=list_followers)
-data_all = data_all.assign(Following=list_following)
-data_all = data_all.assign(Follower_Following_Ratio=list_ratio)
-
-
-print(data_all.shape)
-print(data_all.head())
+print("************************Success, saving csv************************")
 
 data_all.to_csv('data/data_all_raw.csv')
