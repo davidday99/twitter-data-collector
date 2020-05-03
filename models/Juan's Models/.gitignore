@@ -1,0 +1,6 @@
+.idea
+.swp
+.temp
+
+/venv/
+/catboost_info/

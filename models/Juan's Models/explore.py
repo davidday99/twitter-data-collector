@@ -1,20 +1,17 @@
 import matplotlib.pyplot as plt
 import pandas as pd
+import numpy as np
 from wordcloud import WordCloud, STOPWORDS, ImageColorGenerator
 
-data_all = pd.read_csv('../data/data_raw_clean.csv')
-print(data_all.shape)
-print(data_all[data_all['Followers'] < 5000].shape)
+data_all = pd.read_csv('data/data_raw_clean.csv')
+profile_df = pd.read_csv('data/profile_data_all.csv')
 
-avg_likes = []
-for age in range(18, 91):
-    avg_likes.append(data_all[data_all.age == age]['Follower_Following_Ratio'].mean())
-
-plt.bar(range(18, 91), avg_likes)
+lengths = data_all.text.values
+lengths = [len(x) for x in lengths]
+plt.hist(lengths)
 plt.show()
-
-plt.bar(range(18, 91), data_all['age'].value_counts())
-plt.show()
+print(np.max(lengths))
+print(np.sum([int(lengths[i] >= 256) for i in range(len(lengths))]) / len(lengths))
 
 text = ''
 for t in data_all['text']:
