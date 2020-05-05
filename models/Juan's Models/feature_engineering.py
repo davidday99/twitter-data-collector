@@ -8,8 +8,8 @@ import enchant
 nltk.download('vader_lexicon')
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
 
-train_df = pd.read_csv('data/train_w_logits.csv')
-test_df = pd.read_csv('data/test_w_logits.csv')
+train_df = pd.read_csv('data/train.csv')
+test_df = pd.read_csv('data/test.csv')
 data_all = pd.concat([train_df, test_df])
 
 # Sentiment analysis as features
@@ -81,7 +81,7 @@ test_df = data_all[train_df.shape[0]:]
 print(train_df.head())
 print(test_df.head())
 
-test_df.to_csv('data/test_w_logits.csv', index=False)
-train_df.to_csv('data/train_w_logits.csv', index=False)
+test_df.to_csv('data/test.csv', index=False)
+train_df.to_csv('data/train.csv', index=False)
 
 # TODO: maybe add features based on repeated letters, uncommon words (unigrams, bigrams, trigrams)
